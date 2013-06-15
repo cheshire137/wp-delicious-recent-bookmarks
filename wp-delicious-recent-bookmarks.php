@@ -30,10 +30,10 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
   public function __construct() {
     parent::__construct(
       'wp_delicious_recent_bookmarks_widget', // Base ID
-      'WP_Delicious_Recent_Bookmarks_Widget', // Name
+      'Delicious Recent Bookmarks', // Name
       array('description' =>
-            __('Delicious Recent Bookmarks Widget', 'text_domain'))
-   );
+            __('List your recently added Delicious bookmarks.', 'text_domain'))
+    );
   }
 
   /**
@@ -67,11 +67,13 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
       $title = $instance['title'];
     }
     else {
-      $title = __('New title', 'text_domain');
+      $title = __('Recent Delicious Bookmarks', 'text_domain');
     }
     ?>
     <p>
-    <label for="<?php echo $this->get_field_name('title'); ?>"><?php _e('Title:'); ?></label>
+    <label for="<?php echo $this->get_field_name('title'); ?>">
+      <?php _e('Title:'); ?>
+    </label>
     <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
     </p>
     <?php
@@ -93,7 +95,10 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     return $instance;
   }
 }
-add_action('widgets_init', function() {
+
+function wp_delicious_recent_bookmarks_register_widget() {
   register_widget('WpDeliciousRecentBookmarksWidget');
-});
+}
+
+add_action('widgets_init', 'wp_delicious_recent_bookmarks_register_widget');
 ?>
