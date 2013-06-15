@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 class WpDeliciousRecentBookmarksWidget extends WP_Widget {
+  const default_date_format = 'j F Y g:i A';
+
   /**
    * Register widget with WordPress.
    */
@@ -51,6 +53,8 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     $count = $instance['count'];
     $count = empty($count) ? 10 : $count;
     $title_link = $instance['title_link'];
+    $date_format = $instance['date_format'];
+    $date_format = empty($date_format) ? self::default_date_format : $date_format;
     echo $before_widget;
     if (!empty($title)) {
       echo $before_title;
@@ -88,7 +92,7 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
                 </ul>
               <?php } ?>
               <span class="delicious-recent-bookmark-date">
-                <?php echo $this->get_date_time($link->dt); ?>
+                <?php echo $this->get_date_time($link->dt, $date_format); ?>
               </span>
             </li>
           <?php } ?>
@@ -127,27 +131,41 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     } else {
       $title_link = true;
     }
+    if (isset($instance['date_format'])) {
+      $date_format = $instance['date_format'];
+    } else {
+      $date_format = self::default_date_format;
+    }
     ?>
     <p>
-      <label for="<?php echo $this->get_field_name('title'); ?>">
+      <label for="<?php echo $this->get_field_id('title'); ?>">
         <?php _e('Title:'); ?>
       </label>
       <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
     </p>
     <p>
-      <label for="<?php echo $this->get_field_name('user_name'); ?>">
+      <label for="<?php echo $this->get_field_id('user_name'); ?>">
         <?php _e('Delicious user name:'); ?>
       </label>
       <input class="widefat" id="<?php echo $this->get_field_id('user_name'); ?>" name="<?php echo $this->get_field_name('user_name'); ?>" type="text" value="<?php echo esc_attr($user_name); ?>" />
     </p>
     <p>
-      <label for="<?php echo $this->get_field_name('count'); ?>">
+      <label for="<?php echo $this->get_field_id('count'); ?>">
         <?php _e('Number of links to display:'); ?>
       </label>
       <input class="widefat" id="<?php echo $this->get_field_id('count'); ?>" name="<?php echo $this->get_field_name('count'); ?>" type="number" min="1" step="1" value="<?php echo esc_attr($count); ?>" />
     </p>
     <p>
-      <label for="<?php echo $this->get_field_name('title_link'); ?>">
+      <label for="<?php echo $this->get_field_id('date_format'); ?>">
+        <?php _e('Date format:'); ?>
+      </label>
+      <input class="widefat" id="<?php echo $this->get_field_id('date_format'); ?>" name="<?php echo $this->get_field_name('date_format'); ?>" type="text" value="<?php echo esc_attr($date_format); ?>" />
+      <small>
+        Refer to <a href="http://php.net/manual/en/function.date.php">the PHP manual</a> for format options.
+      </small>
+    </p>
+    <p>
+      <label for="<?php echo $this->get_field_id('title_link'); ?>">
         <input type="checkbox" id="<?php echo $this->get_field_id('title_link'); ?>" name="<?php echo $this->get_field_name('title_link'); ?>"<?php echo $title_link ? ' checked="checked"' : '' ?>>
         <?php _e('Link widget title to your Delicious profile?'); ?>
       </label>
@@ -171,6 +189,7 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     $instance['user_name'] = (!empty($new_instance['user_name'])) ? strip_tags($new_instance['user_name']) : '';
     $instance['count'] = (!empty($new_instance['count'])) ? intval(strip_tags($new_instance['count'])) : 10;
     $instance['title_link'] = !empty($new_instance['title_link']);
+    $instance['date_format'] = (!empty($new_instance['date_format'])) ? strip_tags($new_instance['date_format']) : self::default_date_format;
     return $instance;
   }
 
@@ -182,9 +201,9 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     return ($index % 2 == 0) ? 'even' : 'odd';
   }
 
-  private function get_date_time($str_date) {
+  private function get_date_time($str_date, $date_format) {
     $date = new DateTime($str_date);
-    return $date->format('j F Y g:i A');
+    return $date->format($date_format);
   }
 
   private function get_tag_url($user_name, $tag) {
