@@ -6,22 +6,36 @@ li.delicious-recent-bookmark {
 
 }
 
+li.delicious-recent-bookmark.has-description {
+
+}
+
+li.delicious-recent-bookmark.no-description {
+
+}
+
 li.delicious-recent-bookmark.even {
 
 }
 
 li.delicious-recent-bookmark.odd {
-
+  margin-top: 1em;
 }
 
 a.delicious-recent-bookmark-link {
+  display: block;
+}
 
+p.delicious-recent-bookmark-description {
+  margin: 0;
+  padding: 0;
 }
 
 ul.delicious-recent-bookmark-tags {
   padding-left: 0;
   margin-left: 0;
   font-size: 80%;
+  display: inline-block;
 }
 
 li.delicious-recent-bookmark-tag {
@@ -30,7 +44,7 @@ li.delicious-recent-bookmark-tag {
 }
 
 li.delicious-recent-bookmark-tag + li.delicious-recent-bookmark-tag:before {
-  content: '\b7\a0'; /* middot followed by a space */
+  content: '\a0\b7\a0'; /* a space, followed by a middot, followed by a space */
 }
 
 li.delicious-recent-bookmark-tag.even {
@@ -47,4 +61,8 @@ a.delicious-recent-bookmark-tag-link {
 
 span.delicious-recent-bookmark-date {
   font-size: 80%;
+}
+
+span.delicious-recent-bookmark-date:before {
+  content: '\a0\b7\a0'; /* a space, followed by a middot, followed by a space */
 }

@@ -75,11 +75,19 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
       if (is_array($result) && count($result) > 0) {
         ?>
         <ul class="delicious-recent-bookmarks-list">
-          <?php foreach ($result as $index => $link) { ?>
-            <li class="delicious-recent-bookmark <?php echo $this->get_li_class($index); ?>">
+          <?php
+          foreach ($result as $index => $link) {
+            $has_description = !empty($link->n);
+            ?>
+            <li class="delicious-recent-bookmark <?php echo $this->get_li_class($index); ?> <?php echo $has_description ? 'has-description' : 'no-description'; ?>">
               <a href="<?php echo $link->u; ?>" class="delicious-recent-bookmark-link">
                 <?php echo $link->d; ?>
               </a>
+              <?php if ($has_description) { ?>
+                <p class="delicious-recent-bookmark-description">
+                  <?php echo $link->n; ?>
+                </p>
+              <?php } ?>
               <?php if (is_array($link->t) && count($link->t) > 0) { ?>
                 <ul class="delicious-recent-bookmark-tags">
                   <?php foreach ($link->t as $t_index => $tag) { ?>
