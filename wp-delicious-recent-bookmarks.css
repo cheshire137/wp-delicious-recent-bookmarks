@@ -1,25 +1,23 @@
 ul.delicious-recent-bookmarks-list {
-
 }
 
 li.delicious-recent-bookmark {
+}
 
+li.delicious-recent-bookmark + li.delicious-recent-bookmark {
+  margin-top: 1em;
 }
 
 li.delicious-recent-bookmark.has-description {
-
 }
 
 li.delicious-recent-bookmark.no-description {
-
 }
 
 li.delicious-recent-bookmark.even {
-
 }
 
 li.delicious-recent-bookmark.odd {
-  margin-top: 1em;
 }
 
 a.delicious-recent-bookmark-link {
@@ -48,15 +46,12 @@ li.delicious-recent-bookmark-tag + li.delicious-recent-bookmark-tag:before {
 }
 
 li.delicious-recent-bookmark-tag.even {
-
 }
 
 li.delicious-recent-bookmark-tag.odd {
-
 }
 
 a.delicious-recent-bookmark-tag-link {
-
 }
 
 span.delicious-recent-bookmark-date {
