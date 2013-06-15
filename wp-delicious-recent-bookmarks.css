@@ -1,0 +1,50 @@
+ul.delicious-recent-bookmarks-list {
+
+}
+
+li.delicious-recent-bookmark {
+
+}
+
+li.delicious-recent-bookmark.even {
+
+}
+
+li.delicious-recent-bookmark.odd {
+
+}
+
+a.delicious-recent-bookmark-link {
+
+}
+
+ul.delicious-recent-bookmark-tags {
+  padding-left: 0;
+  margin-left: 0;
+  font-size: 80%;
+}
+
+li.delicious-recent-bookmark-tag {
+  display: inline;
+  list-style: none;
+}
+
+li.delicious-recent-bookmark-tag + li.delicious-recent-bookmark-tag:before {
+  content: '\b7\a0'; /* middot followed by a space */
+}
+
+li.delicious-recent-bookmark-tag.even {
+
+}
+
+li.delicious-recent-bookmark-tag.odd {
+
+}
+
+a.delicious-recent-bookmark-tag-link {
+
+}
+
+span.delicious-recent-bookmark-date {
+  font-size: 80%;
+}

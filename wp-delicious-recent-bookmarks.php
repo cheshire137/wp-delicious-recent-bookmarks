@@ -47,26 +47,28 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
   public function widget($args, $instance) {
     extract($args);
     $title = apply_filters('widget_title', $instance['title']);
-    $user_name = apply_filters('widget_title', $instance['user_name']);
+    $user_name = $instance['user_name'];
+    $count = $instance['count'];
+    $count = empty($count) ? 10 : $count;
     echo $before_widget;
     if (!empty($title)) {
       echo $before_title . $title . $after_title;
     }
     if (!empty($user_name)) {
-      $url = $this->get_recent_url($user_name);
+      $url = $this->get_recent_url($user_name, $count);
       $result = $this->get_results($url);
       if (is_array($result) && count($result) > 0) {
         ?>
         <ul class="delicious-recent-bookmarks-list">
-          <?php foreach ($result as $link) { ?>
-            <li class="delicious-recent-bookmark">
+          <?php foreach ($result as $index => $link) { ?>
+            <li class="delicious-recent-bookmark <?php echo $this->get_li_class($index); ?>">
               <a href="<?php echo $link->u; ?>" class="delicious-recent-bookmark-link">
                 <?php echo $link->d; ?>
               </a>
               <?php if (is_array($link->t) && count($link->t) > 0) { ?>
                 <ul class="delicious-recent-bookmark-tags">
-                  <?php foreach ($link->t as $tag) { ?>
-                    <li class="delicious-recent-bookmark-tag">
+                  <?php foreach ($link->t as $t_index => $tag) { ?>
+                    <li class="delicious-recent-bookmark-tag <?php echo $this->get_li_class($t_index); ?>">
                       <a href="<?php echo $this->get_tag_url($user_name, $tag); ?>" class="delicious-recent-bookmark-tag-link">
                         <?php echo $tag; ?>
                       </a>
@@ -104,6 +106,11 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     } else {
       $user_name = '';
     }
+    if (isset($instance['count'])) {
+      $count = $instance['count'];
+    } else {
+      $count = 10;
+    }
     ?>
     <p>
       <label for="<?php echo $this->get_field_name('title'); ?>">
@@ -116,6 +123,12 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
         <?php _e('Delicious user name:'); ?>
       </label>
       <input class="widefat" id="<?php echo $this->get_field_id('user_name'); ?>" name="<?php echo $this->get_field_name('user_name'); ?>" type="text" value="<?php echo esc_attr($user_name); ?>" />
+    </p>
+    <p>
+      <label for="<?php echo $this->get_field_name('count'); ?>">
+        <?php _e('Number of links to display:'); ?>
+      </label>
+      <input class="widefat" id="<?php echo $this->get_field_id('count'); ?>" name="<?php echo $this->get_field_name('count'); ?>" type="number" min="1" step="1" value="<?php echo esc_attr($count); ?>" />
     </p>
     <?php
   }
@@ -134,7 +147,12 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     $instance = array();
     $instance['title'] = (!empty($new_instance['title'])) ? strip_tags($new_instance['title']) : '';
     $instance['user_name'] = (!empty($new_instance['user_name'])) ? strip_tags($new_instance['user_name']) : '';
+    $instance['count'] = (!empty($new_instance['count'])) ? intval(strip_tags($new_instance['count'])) : 10;
     return $instance;
+  }
+
+  private function get_li_class($index) {
+    return ($index % 2 == 0) ? 'even' : 'odd';
   }
 
   private function get_date_time($str_date) {
@@ -146,8 +164,9 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     return 'https://delicious.com/' . $user_name . '/' . urlencode($tag);
   }
 
-  private function get_recent_url($user_name) {
-    return 'http://feeds.delicious.com/v2/json/' . $user_name;
+  private function get_recent_url($user_name, $count) {
+    return 'http://feeds.delicious.com/v2/json/' . $user_name . '?count=' .
+           $count;
   }
 
   private function get_results($url) {
@@ -163,6 +182,8 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
 }
 
 function wp_delicious_recent_bookmarks_register_widget() {
+  wp_enqueue_style('wp-delicious-recent-bookmarks-widget-style',
+                   plugins_url('wp-delicious-recent-bookmarks.css', __FILE__));
   register_widget('WpDeliciousRecentBookmarksWidget');
 }
 
