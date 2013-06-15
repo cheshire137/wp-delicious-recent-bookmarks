@@ -50,9 +50,20 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     $user_name = $instance['user_name'];
     $count = $instance['count'];
     $count = empty($count) ? 10 : $count;
+    $title_link = $instance['title_link'];
     echo $before_widget;
     if (!empty($title)) {
-      echo $before_title . $title . $after_title;
+      echo $before_title;
+      if ($title_link) {
+        ?>
+        <a href="<?php echo $this->get_user_link($user_name); ?>" class="delicious-recent-bookmarks-list-title-link">
+          <?php echo $title; ?>
+        </a>
+        <?php
+      } else {
+        echo $title;
+      }
+      echo $after_title;
     }
     if (!empty($user_name)) {
       $url = $this->get_recent_url($user_name, $count);
@@ -111,6 +122,11 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     } else {
       $count = 10;
     }
+    if (isset($instance['title_link'])) {
+      $title_link = $instance['title_link'];
+    } else {
+      $title_link = true;
+    }
     ?>
     <p>
       <label for="<?php echo $this->get_field_name('title'); ?>">
@@ -130,6 +146,12 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
       </label>
       <input class="widefat" id="<?php echo $this->get_field_id('count'); ?>" name="<?php echo $this->get_field_name('count'); ?>" type="number" min="1" step="1" value="<?php echo esc_attr($count); ?>" />
     </p>
+    <p>
+      <label for="<?php echo $this->get_field_name('title_link'); ?>">
+        <input type="checkbox" id="<?php echo $this->get_field_id('title_link'); ?>" name="<?php echo $this->get_field_name('title_link'); ?>"<?php echo $title_link ? ' checked="checked"' : '' ?>>
+        <?php _e('Link widget title to your Delicious profile?'); ?>
+      </label>
+    </p>
     <?php
   }
 
@@ -148,7 +170,12 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
     $instance['title'] = (!empty($new_instance['title'])) ? strip_tags($new_instance['title']) : '';
     $instance['user_name'] = (!empty($new_instance['user_name'])) ? strip_tags($new_instance['user_name']) : '';
     $instance['count'] = (!empty($new_instance['count'])) ? intval(strip_tags($new_instance['count'])) : 10;
+    $instance['title_link'] = !empty($new_instance['title_link']);
     return $instance;
+  }
+
+  private function get_user_link($user_name) {
+    return 'https://delicious.com/' . $user_name;
   }
 
   private function get_li_class($index) {
