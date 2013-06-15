@@ -47,11 +47,42 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
   public function widget($args, $instance) {
     extract($args);
     $title = apply_filters('widget_title', $instance['title']);
+    $user_name = apply_filters('widget_title', $instance['user_name']);
     echo $before_widget;
     if (!empty($title)) {
       echo $before_title . $title . $after_title;
     }
-    echo __('Hello, World!', 'text_domain');
+    if (!empty($user_name)) {
+      $url = $this->get_recent_url($user_name);
+      $result = $this->get_results($url);
+      if (is_array($result) && count($result) > 0) {
+        ?>
+        <ul class="delicious-recent-bookmarks-list">
+          <?php foreach ($result as $link) { ?>
+            <li class="delicious-recent-bookmark">
+              <a href="<?php echo $link->u; ?>" class="delicious-recent-bookmark-link">
+                <?php echo $link->d; ?>
+              </a>
+              <?php if (is_array($link->t) && count($link->t) > 0) { ?>
+                <ul class="delicious-recent-bookmark-tags">
+                  <?php foreach ($link->t as $tag) { ?>
+                    <li class="delicious-recent-bookmark-tag">
+                      <a href="<?php echo $this->get_tag_url($user_name, $tag); ?>" class="delicious-recent-bookmark-tag-link">
+                        <?php echo $tag; ?>
+                      </a>
+                    </li>
+                  <?php } ?>
+                </ul>
+              <?php } ?>
+              <span class="delicious-recent-bookmark-date">
+                <?php echo $this->get_date_time($link->dt); ?>
+              </span>
+            </li>
+          <?php } ?>
+        </ul>
+        <?php
+      }
+    }
     echo $after_widget;
   }
 
@@ -65,16 +96,26 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
   public function form($instance) {
     if (isset($instance['title'])) {
       $title = $instance['title'];
-    }
-    else {
+    } else {
       $title = __('Recent Delicious Bookmarks', 'text_domain');
+    }
+    if (isset($instance['user_name'])) {
+      $user_name = $instance['user_name'];
+    } else {
+      $user_name = '';
     }
     ?>
     <p>
-    <label for="<?php echo $this->get_field_name('title'); ?>">
-      <?php _e('Title:'); ?>
-    </label>
-    <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
+      <label for="<?php echo $this->get_field_name('title'); ?>">
+        <?php _e('Title:'); ?>
+      </label>
+      <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
+    </p>
+    <p>
+      <label for="<?php echo $this->get_field_name('user_name'); ?>">
+        <?php _e('Delicious user name:'); ?>
+      </label>
+      <input class="widefat" id="<?php echo $this->get_field_id('user_name'); ?>" name="<?php echo $this->get_field_name('user_name'); ?>" type="text" value="<?php echo esc_attr($user_name); ?>" />
     </p>
     <?php
   }
@@ -92,7 +133,32 @@ class WpDeliciousRecentBookmarksWidget extends WP_Widget {
   public function update($new_instance, $old_instance) {
     $instance = array();
     $instance['title'] = (!empty($new_instance['title'])) ? strip_tags($new_instance['title']) : '';
+    $instance['user_name'] = (!empty($new_instance['user_name'])) ? strip_tags($new_instance['user_name']) : '';
     return $instance;
+  }
+
+  private function get_date_time($str_date) {
+    $date = new DateTime($str_date);
+    return $date->format('j F Y g:i A');
+  }
+
+  private function get_tag_url($user_name, $tag) {
+    return 'https://delicious.com/' . $user_name . '/' . urlencode($tag);
+  }
+
+  private function get_recent_url($user_name) {
+    return 'http://feeds.delicious.com/v2/json/' . $user_name;
+  }
+
+  private function get_results($url) {
+    $ch = curl_init($url);
+    $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HTTPHEADER => array('Content-type: application/json')
+    );
+    curl_setopt_array($ch, $options);
+    $json_result = curl_exec($ch);
+    return json_decode($json_result);
   }
 }
 
