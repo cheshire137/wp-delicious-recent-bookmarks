@@ -14,7 +14,7 @@ widget title links to your Delicious profile, the format used to display link
 dates. All that you are required to provide is your Delicious user name,
 however.
 
-[Download the latest version of the plugin](https://github.com/moneypenny/wp-delicious-recent-bookmarks/archive/master.zip) or [view the source code](https://github.com/moneypenny/wp-delicious-recent-bookmarks).
+[Download the latest version of the plugin](https://github.com/cheshire137/wp-delicious-recent-bookmarks/archive/master.zip) or [view the source code](https://github.com/cheshire137/wp-delicious-recent-bookmarks/).
 
 == Installation ==
 
